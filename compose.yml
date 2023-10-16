@@ -1,0 +1,16 @@
+name: beers-system
+version: '3.7'
+services:
+  database-mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      MSSQL_SA_PASSWORD: a321de23#!
+      ACCEPT_EULA: Y
+    container_name: database-mssql
+    hostname: database-mssql
+    ports:
+      - "1435:1433"
+    volumes:
+      - db_data:/var/opt/mssql
+volumes:
+  db_data:
