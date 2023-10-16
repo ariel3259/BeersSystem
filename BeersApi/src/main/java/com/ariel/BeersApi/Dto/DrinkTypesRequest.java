@@ -1,10 +1,9 @@
 package com.ariel.BeersApi.Dto;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
-
-@AllArgsConstructor
 @Getter
 public class DrinkTypesRequest {
+    @NotEmpty()
     private String description;
 }

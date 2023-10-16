@@ -17,11 +17,14 @@ import java.util.Optional;
 
 @Service
 public class DrinkTypesService {
+    private final IDrinkTypesRepository drinkTypesRepository;
 
     @Autowired
-    private IDrinkTypesRepository drinkTypesRepository;
+    public DrinkTypesService(IDrinkTypesRepository dtr) {
+        drinkTypesRepository = dtr;
+    }
 
-    public PageDto<DrinkTypesResponse> GetAll(Optional<Integer> page, Optional<Integer> limit) {
+    public PageDto<DrinkTypesResponse> getAll(Optional<Integer> page, Optional<Integer> limit) {
         Pageable pageable = PageRequest.of(page.orElse(0), limit.orElse(10));
         Page<DrinkTypes> pageDrinkTypes = drinkTypesRepository.getAllByStatusTrue(pageable);
         long totalCount = drinkTypesRepository.countByStatusTrue();
@@ -29,7 +32,7 @@ public class DrinkTypesService {
                 .stream()
                 .map((x) -> new DrinkTypesResponse(x.getId(), x.getDescription()))
                 .toList();
-        return new PageDto<DrinkTypesResponse>(drinkTypesResponse, totalCount);
+        return new PageDto<>(drinkTypesResponse, totalCount);
     }
 
     public ServiceResponse<DrinkTypesResponse> create(DrinkTypesRequest request) {
@@ -47,5 +50,9 @@ public class DrinkTypesService {
         DrinkTypes drinkType = new DrinkTypes(request.getDescription());
         DrinkTypes response = drinkTypesRepository.save(drinkType);
         return ServiceResponse.success(new DrinkTypesResponse(response.getId(), response.getDescription()));
+    }
+
+    public void delete(int id) {
+        drinkTypesRepository.delete(id);
     }
 }

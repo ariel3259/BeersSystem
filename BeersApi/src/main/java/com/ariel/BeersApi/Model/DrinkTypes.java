@@ -2,9 +2,10 @@ package com.ariel.BeersApi.Model;
 
 import com.ariel.BeersApi.Abstractions.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 
 import java.util.Set;
 
@@ -13,7 +14,9 @@ import java.util.Set;
         @AttributeOverride(name = "id", column = @Column(name="drink_types_id"))
 })
 @Entity()
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public class DrinkTypes extends BaseEntity {
     @Column(unique = true)
     private String description;
