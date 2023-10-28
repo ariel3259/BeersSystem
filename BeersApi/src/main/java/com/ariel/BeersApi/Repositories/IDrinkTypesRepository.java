@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface IDrinkTypesRepository extends IRepository<DrinkTypes, Integer>{
 
     Optional<DrinkTypes> findByDescription(String description);
+
+
 }

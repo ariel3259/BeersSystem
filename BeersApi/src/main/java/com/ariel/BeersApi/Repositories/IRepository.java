@@ -16,7 +16,7 @@ import java.util.Optional;
 @NoRepositoryBean()
 public interface IRepository<T extends BaseEntity, ID extends Serializable> extends JpaRepository<T, ID> {
     Page<T> getAllByStatusTrue(Pageable pageable);
-    long countByStatusTrue();
+    T getReferenceByIdAndStatusTrue(ID id);
     List<T> getAllByStatusTrue();
     @Modifying()
     @Query("UPDATE #{#entityName} e SET e.status = False WHERE e.id = :Id AND e.status = True")
