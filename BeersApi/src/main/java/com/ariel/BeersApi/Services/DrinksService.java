@@ -1,8 +1,6 @@
 package com.ariel.BeersApi.Services;
 
-import com.ariel.BeersApi.Dto.DrinkTypesResponse;
-import com.ariel.BeersApi.Dto.DrinksResponse;
-import com.ariel.BeersApi.Dto.PageDto;
+import com.ariel.BeersApi.Dto.*;
 import com.ariel.BeersApi.Model.DrinkTypes;
 import com.ariel.BeersApi.Model.Drinks;
 import com.ariel.BeersApi.Repositories.IDrinkTypesRepository;
@@ -29,7 +27,7 @@ public class DrinksService {
     public PageDto<DrinksResponse> getAll(Optional<Integer> page, Optional<Integer> limit, Optional<Integer> drinkTypeId) {
         Page<Drinks> records;
         Pageable pageable = PageRequest.of(page.orElse(0), limit.orElse(10));
-        if (drinkTypeId.isPresent()) records = drinksRepository.getAllByDrinkTypesIdAndStatusTrue(pageable, drinkTypeId.get());
+        if (drinkTypeId.isPresent()) records = drinksRepository.getAllByDrinkTypeAndStatusTrue(drinkTypeId.get(), pageable);
         else records = drinksRepository.getAllByStatusTrue(pageable);
         List<DrinksResponse> drinksResponse = records.get()
                 .map((x) -> {
@@ -45,5 +43,46 @@ public class DrinksService {
         if (drink == null) return null;
         DrinkTypes drinkType = drink.getDrinkType();
         return new DrinksResponse(drink.getId(), drink.getName(), drink.getAlcoholRate(), drink.getPrice(), new DrinkTypesResponse(drinkType.getId(), drinkType.getDescription()));
+    }
+    public ServiceResponse<DrinksResponse> save(DrinksRequest dto) {
+        DrinkTypes drinkType = drinkTypesRepository.getReferenceByIdAndStatusTrue(dto.getDrinkTypesId());
+        if (drinkType == null)
+            return ServiceResponse.error("The drink type doesn't exits");
+        Drinks drinkToCreate = new Drinks(dto.getName(), dto.getAlcoholRate(), dto.getPrice(), drinkType);
+        Drinks drink =drinksRepository.save(drinkToCreate);
+        DrinksResponse response = new DrinksResponse(drink.getId(), drink.getName(), drink.getAlcoholRate(), drink.getPrice(), new DrinkTypesResponse(drinkType.getId(), drinkType.getDescription()));
+        return ServiceResponse.success(response);
+    }
+
+    public ServiceResponse<DrinksResponse> update(DrinksUpdateRequest dto, int drinkId) {
+        Drinks drink = drinksRepository.getReferenceByIdAndStatusTrue(drinkId);
+        if (drink == null)
+            return ServiceResponse.error("The drink does not exits");
+        drink.setName(dto.getName().orElse(drink.getName()));
+        drink.setAlcoholRate(dto.getAlcoholRate().orElse(drink.getAlcoholRate()));
+        drink.setPrice(dto.getPrice().orElse(drink.getPrice()));
+        DrinkTypes drinkTypeOld = drink.getDrinkType();
+        if (dto.getDrinkTypeId().isPresent() && dto.getDrinkTypeId().get() != drinkTypeOld.getId()) {
+            DrinkTypes drinkTypeNew = drinkTypesRepository.getReferenceByIdAndStatusTrue(dto.getDrinkTypeId().get());
+            if (drinkTypeNew == null)
+                return ServiceResponse.error("The drink type does not exits");
+            drink.setDrinkType(drinkTypeNew);
+        }
+        Drinks drinkUpdated = drinksRepository.save(drink);
+        DrinkTypes drinkType = drinkUpdated.getDrinkType();
+        DrinksResponse drinksResponse = new DrinksResponse(
+                drinkUpdated.getId(),
+                drinkUpdated.getName(),
+                drinkUpdated.getAlcoholRate(),
+                drinkUpdated.getPrice(),
+                new DrinkTypesResponse(
+                        drinkType.getId(),
+                        drinkType.getDescription()
+                ));
+        return ServiceResponse.success(drinksResponse);
+    }
+
+    public void delete(int drinksId) {
+        drinksRepository.delete(drinksId);
     }
 }

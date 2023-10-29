@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IDrinksRepository extends IRepository<Drinks, Integer>{
-    public Page<Drinks> getAllByDrinkTypesIdAndStatusTrue(Pageable pageable, int drinkTypesId);
+    public Page<Drinks> getAllByDrinkTypeAndStatusTrue(int drinkTypesId, Pageable pageable);
 
 }

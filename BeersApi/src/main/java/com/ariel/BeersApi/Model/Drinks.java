@@ -2,6 +2,7 @@ package com.ariel.BeersApi.Model;
 
 import com.ariel.BeersApi.Abstractions.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import lombok.Setter;
 })
 @Getter
 @Setter
+@AllArgsConstructor
 public class Drinks extends BaseEntity {
     @Column
     private String name;
