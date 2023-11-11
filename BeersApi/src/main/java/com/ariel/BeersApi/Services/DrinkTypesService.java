@@ -27,6 +27,7 @@ public class DrinkTypesService {
     public PageDto<DrinkTypesResponse> getAll(Optional<Integer> page, Optional<Integer> limit) {
         Pageable pageable = PageRequest.of(page.orElse(0), limit.orElse(10));
         Page<DrinkTypes> pageDrinkTypes = drinkTypesRepository.getAllByStatusTrue(pageable);
+        System.out.println("" + pageDrinkTypes.getNumberOfElements());
         List<DrinkTypesResponse> drinkTypesResponse = pageDrinkTypes.get()
                 .map((x) -> new DrinkTypesResponse(x.getId(), x.getDescription()))
                 .toList();

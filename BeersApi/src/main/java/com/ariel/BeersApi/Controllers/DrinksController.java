@@ -1,9 +1,6 @@
 package com.ariel.BeersApi.Controllers;
 
-import com.ariel.BeersApi.Dto.DrinksRequest;
-import com.ariel.BeersApi.Dto.DrinksResponse;
-import com.ariel.BeersApi.Dto.PageDto;
-import com.ariel.BeersApi.Dto.ServiceResponse;
+import com.ariel.BeersApi.Dto.*;
 import com.ariel.BeersApi.Exceptions.HttpException;
 import com.ariel.BeersApi.Services.DrinksService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,9 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -37,10 +32,23 @@ public class DrinksController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody DrinksRequest request) throws HttpException {
+    public ResponseEntity<DrinksResponse> save(@RequestBody DrinksRequest request) throws HttpException {
         ServiceResponse<DrinksResponse> serviceResponse = service.save(request);
         if (serviceResponse.isError()) throw new HttpException(400, serviceResponse.getMessage());
         URI uriCreated = URI.create("/api/drinks");
         return ResponseEntity.created(uriCreated).body(serviceResponse.getResponse());
+    }
+
+    @PutMapping("{drinksId}")
+    public ResponseEntity<DrinksResponse> update(@RequestBody DrinksUpdateRequest request, @RequestAttribute("drinksId") int drinksId) throws HttpException {
+        ServiceResponse<DrinksResponse> serviceResponse = service.update(request, drinksId);
+        if (serviceResponse.isError()) throw new HttpException(400, serviceResponse.getMessage());
+        return ResponseEntity.ok(serviceResponse.getResponse());
+    }
+
+    @DeleteMapping("{drinksId}")
+    public ResponseEntity<Void> delete(@RequestAttribute("drinksId") int drinksId) {
+        service.delete(drinksId);
+        return ResponseEntity.noContent().build();
     }
 }
